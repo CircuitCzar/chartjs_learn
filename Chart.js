@@ -82,6 +82,7 @@ var Chart = function (context) {
         graphMin: config.scaleStartValue,
         labels: [],
       };
+
       for (var i = 0; i < calculatedScale.steps; i++) {
         if (labelTemplateString) {
           calculatedScale.labels.push(
@@ -95,8 +96,9 @@ var Chart = function (context) {
         }
       }
     }
-
+    console.log('calculatedScale', calculatedScale);
     scaleHop = Math.floor(scaleHeight / calculatedScale.steps);
+    console.log('scaleHop', scaleHop);
     calculateXAxisSize();
     // animationLoop(config, drawScale, drawBars, ctx);
     drawScale();
@@ -154,6 +156,7 @@ var Chart = function (context) {
       ctx.lineWidth = config.scaleLineWidth;
       ctx.strokeStyle = config.scaleLineColor;
       ctx.beginPath();
+      // 画 x轴
       ctx.moveTo(width - widestXLabel / 2 + 5, xAxisPosY);
       ctx.lineTo(width - widestXLabel / 2 - xAxisLength - 5, xAxisPosY);
       ctx.stroke();
@@ -176,6 +179,7 @@ var Chart = function (context) {
           ctx.fillText(data.labels[i], 0, 0);
           ctx.restore();
         } else {
+          // 绘制x轴文本
           ctx.fillText(
             data.labels[i],
             yAxisPosX + i * valueHop + valueHop / 2,
@@ -183,6 +187,7 @@ var Chart = function (context) {
           );
         }
 
+        // 画竖网格
         ctx.beginPath();
         ctx.moveTo(yAxisPosX + (i + 1) * valueHop, xAxisPosY + 3);
 
@@ -197,6 +202,7 @@ var Chart = function (context) {
       ctx.lineWidth = config.scaleLineWidth;
       ctx.strokeStyle = config.scaleLineColor;
       ctx.beginPath();
+      // 绘制y轴线
       ctx.moveTo(yAxisPosX, xAxisPosY + 5);
       ctx.lineTo(yAxisPosX, 5);
       ctx.stroke();
@@ -209,6 +215,7 @@ var Chart = function (context) {
         if (config.scaleShowGridLines) {
           ctx.lineWidth = config.scaleGridLineWidth;
           ctx.strokeStyle = config.scaleGridLineColor;
+          // 绘制横网格
           ctx.lineTo(
             yAxisPosX + xAxisLength + 5,
             xAxisPosY - (j + 1) * scaleHop
@@ -219,6 +226,7 @@ var Chart = function (context) {
 
         ctx.stroke();
         if (config.scaleShowLabels) {
+          // 绘制左侧文本
           ctx.fillText(
             calculatedScale.labels[j],
             yAxisPosX - 8,
@@ -228,25 +236,31 @@ var Chart = function (context) {
       }
     }
     function calculateXAxisSize() {
+      console.log('========calculateXAxisSize==========');
       var longestText = 1;
       //if we are showing the labels
       if (config.scaleShowLabels) {
-        ctx.font =
-          config.scaleFontStyle +
-          ' ' +
-          config.scaleFontSize +
-          'px ' +
-          config.scaleFontFamily;
+        ctx.font = `${config.scaleFontStyle} ${config.scaleFontSize}px ${config.scaleFontFamily}`;
         for (var i = 0; i < calculatedScale.labels.length; i++) {
+          // 计算文本宽度
           var measuredText = ctx.measureText(calculatedScale.labels[i]).width;
           longestText = measuredText > longestText ? measuredText : longestText;
         }
-        //Add a little extra padding from the y axis
+        // 文字之间加一点边距
         longestText += 10;
       }
-      xAxisLength = width - longestText - widestXLabel;
-      valueHop = Math.floor(xAxisLength / data.labels.length);
 
+      // 最长longestText 宽度
+      console.log('longestText', longestText); // 30.021484375
+
+      // canvas宽度 - 最长左侧刻度文本宽度 - 下方名称最长文本宽度
+      // longestText
+      // ['15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95', '100']
+      xAxisLength = width - longestText - widestXLabel;
+      console.log('xAxisLength', xAxisLength);
+
+      valueHop = Math.floor(xAxisLength / data.labels.length);
+      console.log('valueHop', valueHop);
       barWidth =
         (valueHop -
           config.scaleGridLineWidth * 2 -
@@ -255,8 +269,15 @@ var Chart = function (context) {
           ((config.barStrokeWidth / 2) * data.datasets.length - 1)) /
         data.datasets.length;
 
+      console.log('barWidth', barWidth);
+
       yAxisPosX = width - widestXLabel / 2 - xAxisLength;
+
+      console.log('yAxisPosX', yAxisPosX);
       xAxisPosY = scaleHeight + config.scaleFontSize / 2;
+
+      console.log('xAxisPosY', xAxisPosY);
+      console.log('========calculateXAxisSize==========');
     }
     /**
      * 计算画布大小
@@ -297,13 +318,14 @@ var Chart = function (context) {
 
       //Add a little padding between the x line and the text
       maxSize -= 5;
-
+      console.log('maxSize', maxSize);
       labelHeight = config.scaleFontSize;
-
+      console.log('labelHeight', labelHeight);
       maxSize -= labelHeight;
       //Set 5 pixels greater than the font size to allow for a little padding from the X axis.
       // 高度
       scaleHeight = maxSize;
+      console.log('scaleHeight', scaleHeight);
       console.log('=========calculateDrawingSizes=========');
       //Then get the area above we can safely draw on.
     }
@@ -343,8 +365,15 @@ var Chart = function (context) {
       // 最小值
       console.log('lowerValue', lowerValue);
 
+      // var maxSteps = Math.floor(scaleHeight / (labelHeight * 0.66));
+      // var minSteps = Math.floor((scaleHeight / labelHeight) * 0.5);
+      // 最多分段
       var maxSteps = Math.floor(scaleHeight / (labelHeight * 0.66));
+      // 最小分段
       var minSteps = Math.floor((scaleHeight / labelHeight) * 0.5);
+
+      console.log('maxSteps', maxSteps);
+      console.log('minSteps', minSteps);
       console.log('=========getValueBounds=========');
       return {
         maxValue: upperValue,
@@ -370,6 +399,7 @@ var Chart = function (context) {
     minValue,
     labelTemplateString
   ) {
+    console.log('=======calculateScale======');
     var graphMin,
       graphMax,
       graphRange,
@@ -379,24 +409,35 @@ var Chart = function (context) {
       rangeOrderOfMagnitude,
       decimalNum;
 
+    // 计算值的范围
     valueRange = maxValue - minValue;
-
+    console.log('valueRange', valueRange);
+    // 计算数量级
     rangeOrderOfMagnitude = calculateOrderOfMagnitude(valueRange);
-
+    console.log('rangeOrderOfMagnitude', rangeOrderOfMagnitude);
     graphMin =
       Math.floor(minValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) *
       Math.pow(10, rangeOrderOfMagnitude);
+
+    // 刻度的最小值
+    console.log('graphMin', graphMin);
 
     graphMax =
       Math.ceil(maxValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) *
       Math.pow(10, rangeOrderOfMagnitude);
 
+    // 刻度的最大值
+    console.log('graphMax', graphMax);
+
     graphRange = graphMax - graphMin;
+    // 刻度范围
+    console.log('graphRange', graphRange);
 
     stepValue = Math.pow(10, rangeOrderOfMagnitude);
+    console.log('stepValue', stepValue);
 
     numberOfSteps = Math.round(graphRange / stepValue);
-
+    console.log('numberOfSteps', numberOfSteps);
     //Compare number of steps to the max and min for that size graph, and add in half steps if need be.
     while (numberOfSteps < minSteps || numberOfSteps > maxSteps) {
       if (numberOfSteps < minSteps) {
@@ -407,24 +448,30 @@ var Chart = function (context) {
         numberOfSteps = Math.round(graphRange / stepValue);
       }
     }
+    console.log('stepValue', stepValue);
+    console.log('numberOfSteps', numberOfSteps);
 
     //Create an array of all the labels by interpolating the string.
 
     var labels = [];
-
+    console.log('labelTemplateString', labelTemplateString);
     if (labelTemplateString) {
       //Fix floating point errors by setting to fixed the on the same decimal as the stepValue.
       for (var i = 1; i < numberOfSteps + 1; i++) {
+        // labels.push(
+        //   tmpl(labelTemplateString, {
+        //     value: (graphMin + stepValue * i).toFixed(
+        //       getDecimalPlaces(stepValue)
+        //     ),
+        //   })
+        // );
         labels.push(
-          tmpl(labelTemplateString, {
-            value: (graphMin + stepValue * i).toFixed(
-              getDecimalPlaces(stepValue)
-            ),
-          })
+          (graphMin + stepValue * i).toFixed(getDecimalPlaces(stepValue))
         );
       }
     }
-
+    console.log('labels', labels);
+    console.log('=======calculateScale======');
     return {
       steps: numberOfSteps,
       stepValue: stepValue,
