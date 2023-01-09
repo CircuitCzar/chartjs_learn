@@ -170,7 +170,7 @@ const maxSteps = Math.floor(scaleHeight / (labelHeight * 0.66)); // 53
 const minSteps = Math.floor((scaleHeight / labelHeight) * 0.5); // 17
 ```
 
-## 刻度计算scale
+## 刻度计算 scale
 
 ![image-20230106094110794](./assets/image-20230106094110794.png)
 
@@ -270,4 +270,222 @@ for (var i = 1; i < numberOfSteps + 1; i++) {
 
 // ['15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95', '100']
 console.log('labels', labels);
+```
+
+## 计算轴线
+
+计算最长文本宽度
+
+```js
+var longestText = 1;
+//if we are showing the labels
+// labels = ['15', '20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95', '100']
+if (config.scaleShowLabels) {
+  ctx.font = `${config.scaleFontStyle} ${config.scaleFontSize}px ${config.scaleFontFamily}`;
+  for (var i = 0; i < calculatedScale.labels.length; i++) {
+    // 计算文本宽度
+    var measuredText = ctx.measureText(calculatedScale.labels[i]).width;
+    longestText = measuredText > longestText ? measuredText : longestText;
+  }
+  // 文字之间加一点边距
+  longestText += 10;
+}
+
+// 最长longestText 宽度
+console.log('longestText', longestText); // 30.021484375
+```
+
+计算
+
+```js
+// 计算x轴的宽度
+// canvas宽度 - 最长左侧刻度文本宽度 - 下方名称最长文本宽度
+// longestText 左边刻度的最长文本
+// widestXLabel 下边名称的最长文本
+// 521.9609375
+xAxisLength = width - longestText - widestXLabel;
+// TODO
+valueHop = Math.floor(xAxisLength / data.labels.length);
+// 条形图宽度 30
+barWidth =
+  (valueHop -
+    config.scaleGridLineWidth * 2 -
+    config.barValueSpacing * 2 -
+    (config.barDatasetSpacing * data.datasets.length - 1) -
+    ((config.barStrokeWidth / 2) * data.datasets.length - 1)) /
+  data.datasets.length;
+
+// 54.0302734375
+yAxisPosX = width - widestXLabel / 2 - xAxisLength;
+// 427
+xAxisPosY = scaleHeight + config.scaleFontSize / 2;
+```
+
+## 绘制轴线
+
+### canvas 坐标
+
+![image-20230109130024598](./assets/image-20230109130024598.png)
+
+```js
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+ctx.beginPath();
+ctx.moveTo(50, 50);
+ctx.lineTo(200, 50);
+ctx.stroke();
+```
+
+![image-20230109130530668](./assets/image-20230109130530668.png)
+
+```js
+// 设置线宽1，线的颜色
+ctx.lineWidth = config.scaleLineWidth;
+ctx.strokeStyle = config.scaleLineColor;
+ctx.beginPath();
+// 画 x轴
+ctx.moveTo(width - widestXLabel / 2 + 5, xAxisPosY);
+ctx.lineTo(width - widestXLabel / 2 - xAxisLength - 5, xAxisPosY);
+ctx.stroke();
+```
+
+绘制文本和网格
+
+![image-20230109131131794](./assets/image-20230109131131794.png)
+
+```js
+ctx.fillStyle = config.scaleFontColor;
+for (var i = 0; i < data.labels.length; i++) {
+  ctx.save();
+
+  // 文本
+  ctx.fillText(
+    data.labels[i],
+    yAxisPosX + i * valueHop + valueHop / 2,
+    xAxisPosY + config.scaleFontSize + 3
+  );
+
+  // 画竖网格
+  ctx.beginPath();
+  ctx.moveTo(yAxisPosX + (i + 1) * valueHop, xAxisPosY + 3);
+  ctx.lineWidth = config.scaleGridLineWidth;
+  ctx.strokeStyle = config.scaleGridLineColor;
+  ctx.lineTo(yAxisPosX + (i + 1) * valueHop, 5);
+  ctx.stroke();
+}
+```
+
+绘制 Y 轴线
+
+![image-20230109131324178](./assets/image-20230109131324178.png)
+
+```js
+// 绘制y轴线
+ctx.lineWidth = config.scaleLineWidth;
+ctx.strokeStyle = config.scaleLineColor;
+ctx.beginPath();
+ctx.moveTo(yAxisPosX, xAxisPosY + 5);
+ctx.lineTo(yAxisPosX, 5);
+ctx.stroke();
+```
+
+绘制网格和文本
+
+![image-20230109131535732](./assets/image-20230109131535732.png)
+
+```js
+ctx.textAlign = 'right';
+ctx.textBaseline = 'middle';
+for (var j = 0; j < calculatedScale.steps; j++) {
+  ctx.beginPath();
+  ctx.moveTo(yAxisPosX - 3, xAxisPosY - (j + 1) * scaleHop);
+  if (config.scaleShowGridLines) {
+    ctx.lineWidth = config.scaleGridLineWidth;
+    ctx.strokeStyle = config.scaleGridLineColor;
+    // 绘制横网格
+    ctx.lineTo(yAxisPosX + xAxisLength + 5, xAxisPosY - (j + 1) * scaleHop);
+  } else {
+    ctx.lineTo(yAxisPosX - 0.5, xAxisPosY - (j + 1) * scaleHop);
+  }
+
+  ctx.stroke();
+  if (config.scaleShowLabels) {
+    // 绘制左侧文本
+    ctx.fillText(
+      calculatedScale.labels[j],
+      yAxisPosX - 8,
+      xAxisPosY - (j + 1) * scaleHop
+    );
+  }
+}
+```
+
+## 绘制条形图
+
+```json
+{
+  "datasets": [
+    {
+      "fillColor": "rgba(220,220,220,0.5)",
+      "strokeColor": "rgba(220,220,220,1)",
+      "data": [65, 59, 90, 81, 56, 55, 40]
+    },
+    {
+      "fillColor": "rgba(151,187,205,0.5)",
+      "strokeColor": "rgba(151,187,205,1)",
+      "data": [28, 48, 40, 19, 96, 27, 100]
+    }
+  ]
+}
+```
+
+绘制条形图
+
+![image-20230109132656641](./assets/image-20230109132656641.png)
+
+```js
+ctx.lineWidth = config.barStrokeWidth;
+for (var i = 0; i < data.datasets.length; i++) {
+  // 填充颜色
+  ctx.fillStyle = data.datasets[i].fillColor;
+  // 边框颜色
+  ctx.strokeStyle = data.datasets[i].strokeColor;
+  for (var j = 0; j < data.datasets[i].data.length; j++) {
+    var barOffset =
+      yAxisPosX +
+      config.barValueSpacing +
+      valueHop * j +
+      barWidth * i +
+      config.barDatasetSpacing * i +
+      config.barStrokeWidth * i;
+
+    ctx.beginPath();
+    ctx.moveTo(barOffset, xAxisPosY);
+    // 绘制左边
+    ctx.lineTo(
+      barOffset,
+      xAxisPosY -
+        animPc *
+          calculateOffset(data.datasets[i].data[j], calculatedScale, scaleHop) +
+        config.barStrokeWidth / 2
+    );
+    // 绘制顶部
+    ctx.lineTo(
+      barOffset + barWidth,
+      xAxisPosY -
+        animPc *
+          calculateOffset(data.datasets[i].data[j], calculatedScale, scaleHop) +
+        config.barStrokeWidth / 2
+    );
+    // 绘制右边
+    ctx.lineTo(barOffset + barWidth, xAxisPosY);
+    if (config.barShowStroke) {
+      ctx.stroke();
+    }
+    ctx.closePath();
+    // 填充颜色
+    ctx.fill();
+  }
+}
 ```

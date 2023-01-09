@@ -105,9 +105,12 @@ var Chart = function (context) {
     drawBars(1);
     function drawBars(animPc) {
       console.log('animPc', animPc);
+      // 线的宽度
       ctx.lineWidth = config.barStrokeWidth;
       for (var i = 0; i < data.datasets.length; i++) {
+        // 填充颜色
         ctx.fillStyle = data.datasets[i].fillColor;
+        // 边框颜色
         ctx.strokeStyle = data.datasets[i].strokeColor;
         for (var j = 0; j < data.datasets[i].data.length; j++) {
           var barOffset =
@@ -120,6 +123,7 @@ var Chart = function (context) {
 
           ctx.beginPath();
           ctx.moveTo(barOffset, xAxisPosY);
+          // 绘制左边
           ctx.lineTo(
             barOffset,
             xAxisPosY -
@@ -131,6 +135,7 @@ var Chart = function (context) {
                 ) +
               config.barStrokeWidth / 2
           );
+          // 绘制顶部
           ctx.lineTo(
             barOffset + barWidth,
             xAxisPosY -
@@ -142,23 +147,32 @@ var Chart = function (context) {
                 ) +
               config.barStrokeWidth / 2
           );
+          // 绘制右边
           ctx.lineTo(barOffset + barWidth, xAxisPosY);
           if (config.barShowStroke) {
             ctx.stroke();
           }
           ctx.closePath();
+          // 填充颜色
           ctx.fill();
         }
       }
     }
     function drawScale() {
+      console.log('==========drawScale==========');
       //X axis line
       ctx.lineWidth = config.scaleLineWidth;
       ctx.strokeStyle = config.scaleLineColor;
       ctx.beginPath();
       // 画 x轴
       ctx.moveTo(width - widestXLabel / 2 + 5, xAxisPosY);
+      console.log('moveTo', width - widestXLabel / 2 + 5, xAxisPosY);
       ctx.lineTo(width - widestXLabel / 2 - xAxisLength - 5, xAxisPosY);
+      console.log(
+        'lineTo',
+        width - widestXLabel / 2 - xAxisLength - 5,
+        xAxisPosY
+      );
       ctx.stroke();
 
       if (rotateLabels > 0) {
@@ -170,22 +184,27 @@ var Chart = function (context) {
       ctx.fillStyle = config.scaleFontColor;
       for (var i = 0; i < data.labels.length; i++) {
         ctx.save();
-        if (rotateLabels > 0) {
-          ctx.translate(
-            yAxisPosX + i * valueHop,
-            xAxisPosY + config.scaleFontSize
-          );
-          ctx.rotate(-(rotateLabels * (Math.PI / 180)));
-          ctx.fillText(data.labels[i], 0, 0);
-          ctx.restore();
-        } else {
-          // 绘制x轴文本
-          ctx.fillText(
-            data.labels[i],
-            yAxisPosX + i * valueHop + valueHop / 2,
-            xAxisPosY + config.scaleFontSize + 3
-          );
-        }
+        ctx.fillText(
+          data.labels[i],
+          yAxisPosX + i * valueHop + valueHop / 2,
+          xAxisPosY + config.scaleFontSize + 3
+        );
+        // if (rotateLabels > 0) {
+        //   ctx.translate(
+        //     yAxisPosX + i * valueHop,
+        //     xAxisPosY + config.scaleFontSize
+        //   );
+        //   ctx.rotate(-(rotateLabels * (Math.PI / 180)));
+        //   ctx.fillText(data.labels[i], 0, 0);
+        //   ctx.restore();
+        // } else {
+        //   // 绘制x轴文本
+        //   ctx.fillText(
+        //     data.labels[i],
+        //     yAxisPosX + i * valueHop + valueHop / 2,
+        //     xAxisPosY + config.scaleFontSize + 3
+        //   );
+        // }
 
         // 画竖网格
         ctx.beginPath();
@@ -198,11 +217,10 @@ var Chart = function (context) {
         ctx.stroke();
       }
 
-      //Y axis
+      // 绘制y轴线
       ctx.lineWidth = config.scaleLineWidth;
       ctx.strokeStyle = config.scaleLineColor;
       ctx.beginPath();
-      // 绘制y轴线
       ctx.moveTo(yAxisPosX, xAxisPosY + 5);
       ctx.lineTo(yAxisPosX, 5);
       ctx.stroke();
@@ -234,6 +252,7 @@ var Chart = function (context) {
           );
         }
       }
+      console.log('==========drawScale==========');
     }
     function calculateXAxisSize() {
       console.log('========calculateXAxisSize==========');
