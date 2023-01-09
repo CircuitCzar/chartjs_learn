@@ -165,6 +165,7 @@ var Chart = function (context) {
       ctx.strokeStyle = config.scaleLineColor;
       ctx.beginPath();
       // 画 x轴
+      console.log('widestXLabel', widestXLabel);
       ctx.moveTo(width - widestXLabel / 2 + 5, xAxisPosY);
       console.log('moveTo', width - widestXLabel / 2 + 5, xAxisPosY);
       ctx.lineTo(width - widestXLabel / 2 - xAxisLength - 5, xAxisPosY);

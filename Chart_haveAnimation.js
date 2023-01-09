@@ -111,9 +111,9 @@ var Chart = function (context) {
 
     scaleHop = Math.floor(scaleHeight / calculatedScale.steps);
     calculateXAxisSize();
-    // animationLoop(config, drawScale, drawBars, ctx);
-    drawScale();
-    drawBars(1);
+    // drawScale();
+    animationLoop(config, drawScale, drawBars, ctx);
+    // drawBars(1);
     function drawBars(animPc) {
       console.log('animPc', animPc);
       ctx.lineWidth = config.barStrokeWidth;
@@ -348,15 +348,22 @@ var Chart = function (context) {
   }
 
   function animationLoop(config, drawScale, drawData, ctx) {
+    // config.animation true时，有动画，false时无动画
+    // animationSteps 步骤，多少步达到1
+    // animationEasing 动画名称
+    // percentAnimComplete 0
+    // 假定config.animationSteps 60,animFrameAmount = 1/60
     var animFrameAmount = config.animation
-        ? 1 / CapValue(config.animationSteps, Number.MAX_VALUE, 1)
-        : 1,
-      easingFunction = animationOptions[config.animationEasing],
-      percentAnimComplete = config.animation ? 0 : 1;
+      ? 1 / CapValue(config.animationSteps, Number.MAX_VALUE, 1)
+      : 1;
+    // 动画函数
+    var easingFunction = animationOptions[config.animationEasing];
+    // 动画完成百分比
+    var percentAnimComplete = config.animation ? 0 : 1;
 
     if (typeof drawScale !== 'function') drawScale = function () {};
 
-    requestAnimFrame(animLoop);
+    window.requestAnimationFrame(animLoop);
 
     function animateFrame() {
       var easeAdjustedAnimationPercent = config.animation
@@ -365,19 +372,22 @@ var Chart = function (context) {
       clear(ctx);
       if (config.scaleOverlay) {
         drawData(easeAdjustedAnimationPercent);
+        // 绘制刻度条
         drawScale();
       } else {
+        // 绘制刻度条
         drawScale();
+        // 绘制图像传入小数值
         drawData(easeAdjustedAnimationPercent);
       }
     }
     function animLoop() {
-      //We need to check if the animation is incomplete (less than 1), or complete (1).
+      // 加1/60
       percentAnimComplete += animFrameAmount;
       animateFrame();
-      //Stop the loop continuing forever
+      //循环调用
       if (percentAnimComplete <= 1) {
-        requestAnimFrame(animLoop);
+        window.requestAnimationFrame(animLoop);
       } else {
         if (typeof config.onAnimationComplete == 'function')
           config.onAnimationComplete();
