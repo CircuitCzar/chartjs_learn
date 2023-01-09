@@ -724,9 +724,9 @@ function animationLoop(config, drawScale, drawData, ctx) {
 }
 ```
 
-# Chart - 饼图
+# Chart - 甜甜圈
 
-数据
+## 数据
 
 ```js
 var doughnutData = [
@@ -753,7 +753,7 @@ var doughnutData = [
 ];
 ```
 
-求总和，半径，切口半径
+## 求总和，半径，切口半径
 
 ```js
 // 数组中获取最小值
@@ -841,7 +841,7 @@ ctx.stroke();
 
 ![image-20230109170642224](./assets/image-20230109170642224.png)
 
-### 绘制饼图
+## 绘制甜甜圈
 
 ![image-20230109170722732](./assets/image-20230109170722732.png)
 
@@ -887,4 +887,6 @@ for (var i = 0; i < data.length; i++) {
   cumulativeAngle += segmentAngle;
 }
 ```
+
+# Chart - 饼图
 
