@@ -1189,3 +1189,56 @@ ctx.fill();
 ```
 
 ![image-20230110114037291](./assets/image-20230110114037291.png)
+
+## 求 P1,P2
+
+P0起点坐标，P3结束点坐标是已知的。
+
+P1的Y坐标和P0的Y坐标一致
+
+P2的Y坐标和P3的Y坐标一致
+
+只需要求P1的X轴坐标和P2的X轴坐标。
+
+P1的X轴坐标和P2的X轴坐标一致，
+
+![image-20230110144320138](./assets/image-20230110144320138.png)
+
+```js
+// 获取绘图上下文
+var ctx = canvas.getContext('2d');
+
+const x1 = 140.0302734375;
+const y1 = 252.2;
+const x2 = 226.0302734375;
+const y2 = 289;
+// 绘制一段三次贝塞尔曲线
+ctx.moveTo(x1, y1);
+ctx.bezierCurveTo(x1 + (x2 - x1) / 2, y1, x1 + (x2 - x1) / 2, y2, x2, y2);
+// 绘制
+ctx.stroke();
+
+// P0
+ctx.beginPath();
+ctx.arc(x1, y1, 5, 0, 2 * Math.PI);
+ctx.fill();
+
+// P1 (XX,y1)
+// 求出中间位置的差值 (x2-x1)/2
+// 求X坐标值 x = x1 + (x2-x1)/2
+// P1 (x,y1)
+ctx.beginPath();
+ctx.arc(x1 + (x2 - x1) / 2, y1, 5, 0, 2 * Math.PI);
+ctx.fill();
+
+// P2  (XX,y2)
+// P2  (x1 + (x2 - x1) / 2,y2)
+ctx.beginPath();
+ctx.arc(x1 + (x2 - x1) / 2, y2, 5, 0, 2 * Math.PI);
+ctx.fill();
+
+// P3
+ctx.beginPath();
+ctx.arc(x2, y2, 5, 0, 2 * Math.PI);
+ctx.fill();
+```

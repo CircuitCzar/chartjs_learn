@@ -119,16 +119,36 @@ var Chart = function (context) {
               )
         );
 
+        console.log(
+          '@',
+          yAxisPosX,
+          xAxisPosY -
+            animPc *
+              calculateOffset(
+                data.datasets[i].data[0],
+                calculatedScale,
+                scaleHop
+              )
+        );
         // data.datasets[i].data.length
         for (var j = 1; j < data.datasets[i].data.length; j++) {
           if (config.bezierCurve) {
+            console.log(
+              '@@',
+              xPos(j - 0.5),
+              yPos(0, j - 1),
+              xPos(j - 0.5),
+              yPos(0, j),
+              xPos(j),
+              yPos(0, j)
+            );
             ctx.bezierCurveTo(
               xPos(j - 0.5),
-              yPos(i, j - 1),
+              yPos(0, j - 1),
               xPos(j - 0.5),
-              yPos(i, j),
+              yPos(0, j),
               xPos(j),
-              yPos(i, j)
+              yPos(0, j)
             );
           } else {
             ctx.lineTo(xPos(j), yPos(i, j));
@@ -371,9 +391,35 @@ var Chart = function (context) {
   };
 
   function calculateOffset(val, calculatedScale, scaleHop) {
+    console.log('val', val); // 点的值28
+    console.log('calculatedScale', calculatedScale);
+    console.log('scaleHop', scaleHop); // 每一格的高度23
+    /**
+     * steps 18格
+     * stepValue 每一个的值
+     * 18 * 5 = 90
+     *
+     */
     var outerValue = calculatedScale.steps * calculatedScale.stepValue;
+    console.log('outerValue', outerValue);
+    /**
+     * value 值28
+     * graphMin 最小刻度10
+     * 调整后的值 28 - 10 = 18
+     */
     var adjustedValue = val - calculatedScale.graphMin;
+    console.log('adjustedValue', adjustedValue);
+    /**
+     * 18/90 = 0.2
+     */
     var scalingFactor = CapValue(adjustedValue / outerValue, 1, 0);
+    console.log('scalingFactor', scalingFactor);
+    console.log('return', scaleHop * calculatedScale.steps * scalingFactor);
+    /**
+     * 每一格的高度23
+     * steps 18格
+     * 23 * 18 * 0.2 = 82.8
+     */
     return scaleHop * calculatedScale.steps * scalingFactor;
   }
 
