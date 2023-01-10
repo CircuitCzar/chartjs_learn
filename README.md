@@ -1192,15 +1192,15 @@ ctx.fill();
 
 ## 求 P1,P2
 
-P0起点坐标，P3结束点坐标是已知的。
+P0 起点坐标，P3 结束点坐标是已知的。
 
-P1的Y坐标和P0的Y坐标一致
+P1 的 Y 坐标和 P0 的 Y 坐标一致
 
-P2的Y坐标和P3的Y坐标一致
+P2 的 Y 坐标和 P3 的 Y 坐标一致
 
-只需要求P1的X轴坐标和P2的X轴坐标。
+只需要求 P1 的 X 轴坐标和 P2 的 X 轴坐标。
 
-P1的X轴坐标和P2的X轴坐标一致，
+P1 的 X 轴坐标和 P2 的 X 轴坐标一致，
 
 ![image-20230110144320138](./assets/image-20230110144320138.png)
 
@@ -1241,4 +1241,37 @@ ctx.fill();
 ctx.beginPath();
 ctx.arc(x2, y2, 5, 0, 2 * Math.PI);
 ctx.fill();
+```
+
+# 基地面积图
+
+## 数据
+
+```js
+var chartData = [
+  {
+    value: Math.random(),
+    color: '#D97041',
+  },
+  {
+    value: Math.random(),
+    color: '#C7604C',
+  },
+  {
+    value: Math.random(),
+    color: '#21323D',
+  },
+  {
+    value: Math.random(),
+    color: '#9D9B7F',
+  },
+  {
+    value: Math.random(),
+    color: '#7D4F6D',
+  },
+  {
+    value: Math.random(),
+    color: '#584A5E',
+  },
+];
 ```
