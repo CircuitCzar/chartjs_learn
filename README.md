@@ -960,3 +960,154 @@ for (var i = 0; i < data.length; i++) {
   cumulativeAngle += segmentAngle;
 }
 ```
+
+# Chart - 折线图
+
+## 数据
+
+```js
+var lineChartData = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      fillColor: 'rgba(151,187,205,0.5)',
+      strokeColor: 'rgba(151,187,205,1)',
+      pointColor: 'rgba(151,187,205,1)',
+      pointStrokeColor: '#fff',
+      data: [28, 48, 40, 19, 96, 27, 100],
+    },
+  ],
+};
+```
+
+## 绘制折线
+
+![image-20230110100300567](./assets/image-20230110100300567.png)
+
+```js
+for (var i = 0; i < data.datasets.length; i++) {
+  ctx.strokeStyle = data.datasets[i].strokeColor;
+  ctx.lineWidth = config.datasetStrokeWidth;
+
+  ctx.beginPath();
+  // 曲线的起始点
+  ctx.moveTo(
+    yAxisPosX,
+    xAxisPosY -
+      animPc *
+        calculateOffset(data.datasets[i].data[0], calculatedScale, scaleHop)
+  );
+
+  // 绘制折线
+  for (var j = 1; j < data.datasets[i].data.length; j++) {
+    // 绘制折线
+    ctx.lineTo(xPos(j), yPos(i, j));
+  }
+  ctx.stroke();
+}
+```
+
+## 绘制边线
+
+![image-20230110100652003](./assets/image-20230110100652003.png)
+
+```js
+for (var i = 0; i < data.datasets.length; i++) {
+  ctx.strokeStyle = data.datasets[i].strokeColor;
+  ctx.lineWidth = config.datasetStrokeWidth;
+
+  ctx.beginPath();
+  // 曲线的起始点
+  ctx.moveTo(
+    yAxisPosX,
+    xAxisPosY -
+      animPc *
+        calculateOffset(data.datasets[i].data[0], calculatedScale, scaleHop)
+  );
+
+  // 绘制折线
+  for (var j = 1; j < data.datasets[i].data.length; j++) {
+    // 绘制折线
+    ctx.lineTo(xPos(j), yPos(i, j));
+  }
+  ctx.stroke();
+
+  // 绘制右边线
+  ctx.lineTo(
+    yAxisPosX + valueHop * (data.datasets[i].data.length - 1),
+    xAxisPosY
+  );
+  // 绘制下边的线
+  ctx.lineTo(yAxisPosX, xAxisPosY);
+  ctx.closePath();
+  ctx.stroke();
+}
+```
+
+## 填充颜色
+
+![image-20230110100827136](./assets/image-20230110100827136.png)
+
+```js
+for (var i = 0; i < data.datasets.length; i++) {
+  ctx.strokeStyle = data.datasets[i].strokeColor;
+  ctx.lineWidth = config.datasetStrokeWidth;
+
+  ctx.beginPath();
+  // 曲线的起始点
+  ctx.moveTo(
+    yAxisPosX,
+    xAxisPosY -
+      animPc *
+        calculateOffset(data.datasets[i].data[0], calculatedScale, scaleHop)
+  );
+
+  // 绘制折线
+  for (var j = 1; j < data.datasets[i].data.length; j++) {
+    // 绘制折线
+    ctx.lineTo(xPos(j), yPos(i, j));
+  }
+  ctx.stroke();
+
+  // 绘制右边线
+  ctx.lineTo(
+    yAxisPosX + valueHop * (data.datasets[i].data.length - 1),
+    xAxisPosY
+  );
+  // 绘制下边的线
+  ctx.lineTo(yAxisPosX, xAxisPosY);
+  ctx.closePath();
+
+  // 填充颜色
+  ctx.fillStyle = data.datasets[i].fillColor;
+  ctx.fill();
+}
+```
+
+## 绘制圆点
+
+![image-20230110101042513](./assets/image-20230110101042513.png)
+
+```js
+ctx.fillStyle = data.datasets[i].pointColor;
+ctx.strokeStyle = data.datasets[i].pointStrokeColor;
+ctx.lineWidth = config.pointDotStrokeWidth;
+for (var k = 0; k < data.datasets[i].data.length; k++) {
+  ctx.beginPath();
+  ctx.arc(
+    yAxisPosX + valueHop * k,
+    xAxisPosY -
+      animPc *
+        calculateOffset(data.datasets[i].data[k], calculatedScale, scaleHop),
+    config.pointDotRadius,
+    0,
+    Math.PI * 2,
+    true
+  );
+  // 填充颜色
+  ctx.fill();
+  // 描边
+  ctx.stroke();
+}
+```
+
